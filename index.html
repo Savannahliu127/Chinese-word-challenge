@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>⚔️ 詞語勇者：打怪物大冒險 (多音字精準修正版)</title>
+  <title>⚔️ 詞語勇者：打怪物大冒險</title>
   <!-- 💡 拼音庫 + 🎉 煙花粒子動畫庫 -->
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.19.6/dist/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
     
-    /* 🏰 動態地圖背景 */
     body {
       background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
       min-height: 100vh;
@@ -25,7 +24,7 @@
       transition: background 0.8s ease;
     }
 
-    /* 👹 怪獸造型卡片容器 (Monster-Shaped UI) */
+    /* 👹 怪獸造型卡片容器 */
     .card-container {
       background: rgba(26, 16, 51, 0.92);
       border: 3px solid #a855f7;
@@ -40,7 +39,7 @@
       transition: all 0.3s ease;
     }
 
-    /* 👹 頂部怪獸雙角裝飾 */
+    /* 怪獸雙角裝飾 */
     .card-container::before {
       content: '👿';
       position: absolute;
@@ -116,8 +115,8 @@
       gap: 8px;
       margin-bottom: 12px;
     }
-    .mode-badge {
-      background: rgba(56, 189, 248, 0.2);
+    .mode-btn {
+      background: rgba(56, 189, 248, 0.15);
       color: #38bdf8;
       font-weight: bold;
       padding: 6px 14px;
@@ -127,8 +126,13 @@
       border: 1px solid #38bdf8;
       transition: all 0.2s ease;
     }
+    .mode-btn.active {
+      background: #38bdf8;
+      color: #0f172a;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+    }
     .bgm-btn {
-      background: rgba(234, 179, 8, 0.2);
+      background: rgba(234, 179, 8, 0.15);
       color: #eab308;
       font-weight: bold;
       padding: 6px 14px;
@@ -271,23 +275,28 @@
       100% { opacity: 0; transform: translateY(-30px) scale(1); }
     }
 
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+    }
+
     .btn {
       font-size: 18px;
       font-weight: bold;
-      padding: 12px 28px;
+      padding: 12px 26px;
       border: none;
       border-radius: 50px;
       cursor: pointer;
       background: linear-gradient(135deg, #a855f7, #6366f1);
       color: #ffffff;
       box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
-      margin: 4px;
       transition: transform 0.1s, box-shadow 0.3s;
     }
     .btn:active { transform: scale(0.95); }
     .btn-success { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
     .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
-    .btn-purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); }
     .btn-danger { background: linear-gradient(135deg, #f43f5e, #be123c); box-shadow: 0 0 20px rgba(244, 63, 94, 0.5); }
     .btn-secondary { background: rgba(255, 255, 255, 0.15); color: #fff; box-shadow: none; font-size: 15px; padding: 8px 18px; }
 
@@ -371,12 +380,9 @@
     <div class="stage-badge" id="stage-display">🗺️ 章節 1：🌲 幽靈暗夜森林</div>
 
     <div class="header-ctrls">
-      <div class="mode-badge" id="mode-display" onclick="promptNewModeSelect()" title="點擊切換模式">
-        ⚙️ 模式：➡️ 順序冒險
-      </div>
-      <div class="bgm-btn" id="bgm-btn" onclick="toggleBGM()">
-        🎵 BGM: OFF
-      </div>
+      <div class="mode-btn active" id="btn-mode-seq" onclick="selectMode('sequential')">➡️ 順序冒險</div>
+      <div class="mode-btn" id="btn-mode-rand" onclick="selectMode('random')">🔀 隨機大亂鬥</div>
+      <div class="bgm-btn" id="bgm-btn" onclick="toggleBGM()">🔇 BGM: OFF</div>
     </div>
 
     <div class="monster-stage">
@@ -391,12 +397,15 @@
     <div class="flashcard" id="flashcard">
       <div id="crit-box"></div>
       <div class="monster-avatar" id="monster-avatar">👻</div>
-      <div class="word" id="word-display">點擊開始討伐</div>
+      <div class="word" id="word-display">點擊下方開始</div>
     </div>
 
     <div class="status-text" id="status-text">點擊按鈕念出魔法咒語打怪</div>
 
-    <button class="btn" id="start-btn" onclick="handleClickStart()">⚔️ 開始討伐怪物</button>
+    <div class="btn-group">
+      <button class="btn" id="start-btn" onclick="startNewGame()">⚔️ 開始討伐怪物</button>
+      <button class="btn btn-warning" id="resume-btn" onclick="loadSavedProgress()" style="display:none;">📂 繼續上次進度</button>
+    </div>
     <br>
     <button class="btn btn-secondary" id="skip-btn" onclick="skipWord()" style="display:none; margin-top:10px;">🛡️ 避開此怪 (跳過)</button>
 
@@ -406,17 +415,7 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="mode-select-modal">
-    <div class="modal-content">
-      <div style="font-size: 22px; font-weight: bold; color: #c084fc; margin-bottom: 10px;">🎮 請選擇冒險模式</div>
-      <div style="font-size: 15px; color: #a0aec0; margin-bottom: 20px;">你想按照關卡順序打怪，還是挑戰隨機出現的怪物呢？</div>
-      <div style="display: flex; flex-direction: column; gap: 12px;">
-        <button class="btn btn-success" onclick="startNewGame('sequential')">➡️ 順序冒險 (按 1~889 關)</button>
-        <button class="btn btn-purple" onclick="startNewGame('random')">🔀 隨機大亂鬥 (全地下城打怪)</button>
-      </div>
-    </div>
-  </div>
-
+  <!-- 讀錯提示 Modal -->
   <div class="modal-overlay" id="fail-modal">
     <div class="modal-content">
       <div style="font-size: 22px; font-weight: bold; color: #f43f5e; margin-bottom: 10px;">💥 魔法發動失敗！怪物反擊</div>
@@ -429,48 +428,25 @@
       
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <button class="btn btn-success" onclick="choiceContinue()">✨ 重新念咒 (重試此詞)</button>
-        <button class="btn btn-warning" onclick="choiceRestart()">🔄 重置地下城 (選擇模式)</button>
+        <button class="btn btn-warning" onclick="choiceRestart()">🔄 重置地下城 (從頭開始)</button>
         <button class="btn btn-danger" onclick="choiceEnd()">🏁 班師回城 (查看戰報)</button>
       </div>
     </div>
   </div>
 
-  <div class="modal-overlay" id="save-modal">
-    <div class="modal-content">
-      <div style="font-size: 22px; font-weight: bold; color: #c084fc; margin-bottom: 15px;">📂 發現勇者冒險存檔</div>
-      <div style="font-size: 17px; color: #cbd5e0; margin-bottom: 20px;" id="save-modal-text">上次已討伐至第 X 隻怪物，請問要繼續冒險嗎？</div>
-      <div style="display: flex; gap: 10px; justify-content: center;">
-        <button class="btn btn-success" onclick="loadSavedProgress()">繼續上次冒險</button>
-        <button class="btn btn-warning" onclick="promptNewModeSelect()">全新冒險</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // 💡 1. 多音字特例精準校正字典（優先級最高，100% 覆蓋「聽音樂」、「樂器」等多音字）
+    // 💡 多音字校正
     const customPinyinDict = {
-      "聽音樂": "tīng yīn yuè",
-      "聽音乐": "tīng yīn yuè",
-      "音樂": "yīn yuè",
-      "音乐": "yīn yuè",
-      "樂器": "yuè qì",
-      "乐器": "yuè qì",
-      "快樂": "kuài lè",
-      "快乐": "kuài lè"
+      "聽音樂": "tīng yīn yuè", "聽音乐": "tīng yīn yuè", "音樂": "yīn yuè", "音乐": "yīn yuè",
+      "樂器": "yuè qì", "乐器": "yuè qì", "快樂": "kuài lè", "快乐": "kuài lè"
     };
 
     const customFuzzyPinyinDict = {
-      "聽音樂": "tingyinyue",
-      "聽音乐": "tingyinyue",
-      "音樂": "yinyue",
-      "音乐": "yinyue",
-      "樂器": "yueqi",
-      "乐器": "yueqi",
-      "快樂": "kuaile",
-      "快乐": "kuaile"
+      "聽音樂": "tingyinyue", "聽音乐": "tingyinyue", "音樂": "yinyue", "音乐": "yinyue",
+      "樂器": "yueqi", "乐器": "yueqi", "快樂": "kuaile", "快乐": "kuaile"
     };
 
-    // 🗺️ 5大章節地圖主題配置 (每 30 詞變換一次)
+    // 🗺️ 地圖主題 (每 30 詞變換風格)
     const stageThemes = [
       { name: "🌲 幽靈暗夜森林", bg: "radial-gradient(circle at center, #1e293b 0%, #0f172a 100%)", themeColor: "#38bdf8" },
       { name: "🌋 烈焰熔岩火山", bg: "radial-gradient(circle at center, #451a03 0%, #0f172a 100%)", themeColor: "#f97316" },
@@ -488,7 +464,7 @@
     const rawWordList = [
       "晴天", "雨天", "陰天", "大霧", "下雨", "打雷", "晴朗", "冰雹", "太陽", "下雪", "月亮", "星星", "彩虹", "閃電", "颱風", 
       "涼快的", "寒冷的", "雲霧", "霧霾", "刮風", "潮濕的", "炎熱的", "傾盆大雨", "烏雲密佈", "陽光明媚", "今天", "昨天", 
-      "明天", "時候", "前天", "後天", "星期", "分", "秒", "小息", "每天", "天天", "黃昏", "早上", "中午", "下午", "晚上", 
+      "新聞", "時候", "前天", "後天", "星期", "分", "秒", "小息", "每天", "天天", "黃昏", "早上", "中午", "下午", "晚上", 
       "上午", "以前", "從前", "以後", "現在", "去年", "今年", "前年", "週末", "上課", "下課", "很久", "季節", "小時", "一大早", 
       "春夏秋冬", "日月", "年月", "有", "有一天", "有一次", "有時候", "星期天", "過了一會兒", "很久以前", "上週", "下個月", 
       "新年", "春節", "假期", "暑假", "假日", "國慶", "放假的時候", "聖誕節", "復活節", "清明節", "萬聖節", "中秋節", 
@@ -561,8 +537,11 @@
     let audioContext = null;
     let sessionWrongWords = new Set();
 
-    let bgmInterval = null;
-    let isBgmOn = false;
+    function selectMode(mode) {
+      currentMode = mode;
+      document.getElementById('btn-mode-seq').className = mode === 'sequential' ? "mode-btn active" : "mode-btn";
+      document.getElementById('btn-mode-rand').className = mode === 'random' ? "mode-btn active" : "mode-btn";
+    }
 
     function toggleBGM() {
       isBgmOn = !isBgmOn;
@@ -615,10 +594,82 @@
       return arr;
     }
 
+    function getMonsterInfo(index) {
+      const level = index + 1;
+      const isBoss = level % 30 === 0;
+
+      if (isBoss) {
+        const bIcon = bossIcons[(Math.floor(level / 30) - 1) % bossIcons.length];
+        const bTitle = bossTitles[(Math.floor(level / 30) - 1) % bossTitles.length];
+        return { icon: bIcon, name: `👑 Lv.${level} STAGE BOSS: ${bTitle}`, isBoss: true };
+      } else {
+        const nIcon = normalIcons[index % normalIcons.length];
+        const nTitle = normalTitles[index % normalTitles.length];
+        return { icon: nIcon, name: `Lv.${level} ${nTitle}`, isBoss: false };
+      }
+    }
+
+    function playSuccessChime(isBoss, isCrit) {
+      try {
+        const ctx = audioContext || new (window.AudioContext || window.webkitAudioContext)();
+        const notes = isBoss ? [440, 554.37, 659.25, 880, 1108.73, 1318.51] : (isCrit ? [523.25, 659.25, 783.99, 1046.50, 1318.51] : [523.25, 659.25, 783.99, 1046.50]);
+        notes.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = (isBoss || isCrit) ? 'triangle' : 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.05);
+          gain.gain.setValueAtTime(0.35, ctx.currentTime + i * 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.05 + 0.3);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * 0.05);
+          osc.stop(ctx.currentTime + i * 0.05 + 0.3);
+        });
+      } catch(e) {}
+    }
+
+    function playFailBuzz() {
+      try {
+        const ctx = audioContext || new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(160, ctx.currentTime);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.35);
+      } catch(e) {}
+    }
+
+    function triggerConfetti(isBoss, isCrit) {
+      if (window.confetti) {
+        confetti({
+          particleCount: isBoss ? 120 : (isCrit ? 80 : 35),
+          spread: isBoss ? 120 : (isCrit ? 90 : 50),
+          origin: { y: 0.65 }
+        });
+      }
+    }
+
     function loadHighScore() {
       const savedScore = localStorage.getItem('vocab_challenge_max') || 0;
       document.getElementById('high-score-display').innerText = `🏆 最高：${savedScore}`;
+      checkSavedProgressBtn();
       return parseInt(savedScore);
+    }
+
+    function checkSavedProgressBtn() {
+      const savedIdx = parseInt(localStorage.getItem('vocab_saved_index') || '0');
+      const resumeBtn = document.getElementById('resume-btn');
+      if (savedIdx > 0 && savedIdx < rawWordList.length && !isChallenging) {
+        resumeBtn.innerText = `📂 繼續第 ${savedIdx + 1} 關`;
+        resumeBtn.style.display = 'inline-block';
+      } else {
+        resumeBtn.style.display = 'none';
+      }
     }
 
     function saveProgress() {
@@ -661,55 +712,14 @@
 
       document.getElementById('count-display').innerText = `⚔️ 擊敗怪物：${currentIndex} 隻`;
       document.getElementById('combo-display').innerText = `🔥 COMBO x${comboCount}`;
-      document.getElementById('mode-display').innerText = currentMode === 'random' ? "⚙️ 模式：🔀 隨機大亂鬥" : "⚙️ 模式：➡️ 順序冒險";
       
       document.getElementById('word-display').innerText = activeWordList[currentIndex];
       saveProgress();
     }
 
-    function handleClickStart() {
-      if (isChallenging) {
-        stopChallenge();
-      } else {
-        const savedIdx = parseInt(localStorage.getItem('vocab_saved_index') || '0');
-        if (savedIdx > 0 && savedIdx < activeWordList.length) {
-          const savedMode = localStorage.getItem('vocab_saved_mode') === 'random' ? '隨機' : '順序';
-          document.getElementById('save-modal-text').innerText = `檢測到上次（${savedMode}模式）已討伐至第 ${savedIdx + 1} 隻怪物【${activeWordList[savedIdx] || ''}】，請問要繼續冒險嗎？`;
-          document.getElementById('save-modal').style.display = 'flex';
-        } else {
-          promptNewModeSelect();
-        }
-      }
-    }
-
-    function promptNewModeSelect() {
-      if (isChallenging) {
-        if (!confirm("切換模式將會暫停當前冒險，確定要切換模式嗎？")) {
-          return;
-        }
-        stopChallenge();
-      }
-      document.getElementById('save-modal').style.display = 'none';
-      document.getElementById('fail-modal').style.display = 'none';
-      document.getElementById('mode-select-modal').style.display = 'flex';
-    }
-
-    function loadSavedProgress() {
-      document.getElementById('save-modal').style.display = 'none';
-      currentIndex = parseInt(localStorage.getItem('vocab_saved_index') || '0');
-      currentMode = localStorage.getItem('vocab_saved_mode') || 'sequential';
-      
-      const savedList = localStorage.getItem('vocab_saved_list');
-      if (savedList) {
-        try { activeWordList = JSON.parse(savedList); } catch(e) { activeWordList = [...rawWordList]; }
-      }
-      startChallengeProcess();
-    }
-
-    function startNewGame(mode) {
-      document.getElementById('mode-select-modal').style.display = 'none';
-      currentMode = mode;
-      if (mode === 'random') {
+    // ⚡ 點擊「開始討伐怪物」直接無縫開始
+    function startNewGame() {
+      if (currentMode === 'random') {
         activeWordList = shuffleArray(rawWordList);
       } else {
         activeWordList = [...rawWordList];
@@ -719,6 +729,26 @@
       maxCombo = 0;
       sessionWrongWords.clear();
       startChallengeProcess();
+    }
+
+    function loadSavedProgress() {
+      currentIndex = parseInt(localStorage.getItem('vocab_saved_index') || '0');
+      currentMode = localStorage.getItem('vocab_saved_mode') || 'sequential';
+      selectMode(currentMode);
+
+      const savedList = localStorage.getItem('vocab_saved_list');
+      if (savedList) {
+        try { activeWordList = JSON.parse(savedList); } catch(e) { activeWordList = [...rawWordList]; }
+      }
+      startChallengeProcess();
+    }
+
+    function handleClickStart() {
+      if (isChallenging) {
+        stopChallenge();
+      } else {
+        startNewGame();
+      }
     }
 
     function startChallengeProcess() {
@@ -737,6 +767,7 @@
       document.getElementById('result-box').style.display = 'none';
       document.getElementById('start-btn').innerText = '班師回城/暫停';
       document.getElementById('start-btn').className = 'btn btn-danger';
+      document.getElementById('resume-btn').style.display = 'none';
       document.getElementById('skip-btn').style.display = 'inline-block';
       
       updateCard();
@@ -756,6 +787,7 @@
       document.getElementById('start-btn').className = 'btn';
       document.getElementById('skip-btn').style.display = 'none';
       document.getElementById('status-text').innerText = '勇者已暫停於地下城關卡';
+      checkSavedProgressBtn();
     }
 
     function initSpeechRecognition() {
@@ -808,10 +840,9 @@
       } catch(e) {}
     }
 
-    // 💡 多音字修正優先提取標準拼音
     function getStandardPinyin(word) {
       if (customPinyinDict[word]) return customPinyinDict[word];
-      if (window.pinyinPro) {
+      if (typeof pinyinPro !== 'undefined' && pinyinPro.pinyin) {
         try {
           return pinyinPro.pinyin(word, { toneType: 'symbol', type: 'string' });
         } catch(e) {}
@@ -821,7 +852,7 @@
 
     function getFuzzyPinyin(str) {
       if (customFuzzyPinyinDict[str]) return customFuzzyPinyinDict[str];
-      if (!window.pinyinPro || !str) return '';
+      if (typeof pinyinPro === 'undefined' || !pinyinPro.pinyin || !str) return '';
       try {
         const py = pinyinPro.pinyin(str, { toneType: 'none', type: 'array' }).join('');
         return py.toLowerCase()
@@ -862,7 +893,6 @@
       return matrix[b.length][a.length];
     }
 
-    // 💡 拼音優先雙向匹配（包含特例多音字優先校正，100% 消除繁簡字體差異）
     function checkMatch(heard, target) {
       if (!heard || !target) return false;
       
@@ -875,13 +905,13 @@
       
       if (customFuzzyPinyinDict[cleanTarget]) {
         pyTargetArray = [customFuzzyPinyinDict[cleanTarget]];
-      } else {
+      } else if (typeof pinyinPro !== 'undefined' && pinyinPro.pinyin) {
         try { pyTargetArray = pinyinPro.pinyin(cleanTarget || target, { toneType: 'none', type: 'array' }); } catch(e){}
       }
 
       if (customFuzzyPinyinDict[cleanHeard]) {
         pyHeardArray = [customFuzzyPinyinDict[cleanHeard]];
-      } else {
+      } else if (typeof pinyinPro !== 'undefined' && pinyinPro.pinyin) {
         try { pyHeardArray = pinyinPro.pinyin(cleanHeard || heard, { toneType: 'none', type: 'array' }); } catch(e){}
       }
 
@@ -894,7 +924,7 @@
         }
       }
 
-      // 2. 模糊拼音 Levenshtein 相似度門檻 (>= 60%)
+      // 2. 模糊拼音比對
       const fuzzyHeard = getFuzzyPinyin(cleanHeard || heard);
       const fuzzyTarget = getFuzzyPinyin(cleanTarget || target);
 
@@ -984,7 +1014,7 @@
 
     function choiceRestart() {
       document.getElementById('fail-modal').style.display = 'none';
-      promptNewModeSelect();
+      startNewGame();
     }
 
     function choiceEnd() {
@@ -1068,7 +1098,7 @@
       try { activeWordList = JSON.parse(savedListStr); } catch(e) {}
     }
     currentMode = localStorage.getItem('vocab_saved_mode') || 'sequential';
-    document.getElementById('mode-display').innerText = currentMode === 'random' ? "⚙️ 模式：🔀 隨機大亂鬥" : "⚙️ 模式：➡️ 順序冒險";
+    selectMode(currentMode);
   </script>
 </body>
 </html>
