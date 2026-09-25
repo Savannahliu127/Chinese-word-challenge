@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>⚔️ 詞語勇者：打怪物大冒險 (30詞Boss/多音字校正/BGM版)</title>
+  <title>⚔️ 詞語勇者：打怪物大冒險 (精準音節匹配/30詞Boss/BGM版)</title>
   <!-- 💡 拼音庫 + 🎉 煙花粒子動畫庫 -->
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.19.6/dist/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -347,14 +347,16 @@
       <div class="high-score-badge" id="high-score-display">🏆 最高：0</div>
     </div>
 
-    <div class="stage-badge" id="stage-display">🗺️ 章節 1：🌲 幽靈暗夜森林</div>
-
-    <div class="header-ctrls">
-      <div class="mode-badge" id="mode-display" onclick="promptNewModeSelect()" title="點擊切換模式">
-        ⚙️ 模式：➡️ 順序冒險 (點擊切換)
-      </div>
-      <div class="bgm-btn" id="bgm-btn" onclick="toggleBGM()">
-        🔇 BGM: OFF
+    <div>
+      <div class="stage-badge" id="stage-display">🗺️ 章節 1：🌲 幽靈暗夜森林</div>
+      <br>
+      <div class="header-ctrls">
+        <div class="mode-badge" id="mode-display" onclick="promptNewModeSelect()" title="點擊切換模式">
+          ⚙️ 模式：➡️ 順序冒險 (點擊切換)
+        </div>
+        <div class="bgm-btn" id="bgm-btn" onclick="toggleBGM()">
+          🔇 BGM: OFF
+        </div>
       </div>
     </div>
 
@@ -429,27 +431,19 @@
   </div>
 
   <script>
-    // 💡 多音字特例校正字典
+    // 💡 多音字特例精準校正字典
     const customPinyinDict = {
-      "聽音樂": "tīng yīn yuè",
-      "聽音乐": "tīng yīn yuè",
-      "音樂": "yīn yuè",
-      "音乐": "yīn yuè",
-      "樂器": "yuè qì",
-      "乐器": "yuè qì",
-      "快樂": "kuài lè",
-      "快乐": "kuài lè"
+      "聽音樂": "tīng yīn yuè", "聽音乐": "tīng yīn yuè",
+      "音樂": "yīn yuè", "音乐": "yīn yuè",
+      "樂器": "yuè qì", "乐器": "yuè qì",
+      "快樂": "kuài lè", "快乐": "kuài lè"
     };
 
-    const customFuzzyPinyinDict = {
-      "聽音樂": "tingyinyue",
-      "聽音乐": "tingyinyue",
-      "音樂": "yinyue",
-      "音乐": "yinyue",
-      "樂器": "yueqi",
-      "乐器": "yueqi",
-      "快樂": "kuaile",
-      "快乐": "kuaile"
+    const customPinyinArrayDict = {
+      "聽音樂": ["ting", "yin", "yue"], "聽音乐": ["ting", "yin", "yue"],
+      "音樂": ["yin", "yue"], "音乐": ["yin", "yue"],
+      "樂器": ["yue", "qi"], "乐器": ["yue", "qi"],
+      "快樂": ["kuai", "le"], "快乐": ["kuai", "le"]
     };
 
     // 🗺️ 5大章節地圖主題配置 (每 30 詞變換一次)
@@ -458,7 +452,7 @@
       { name: "🌋 烈焰熔岩火山", bg: "radial-gradient(circle at center, #451a03 0%, #0f172a 100%)", themeColor: "#f97316" },
       { name: "🔮 紫晶魔幻迷宮", bg: "radial-gradient(circle at center, #3b0764 0%, #0d061a 100%)", themeColor: "#a855f7" },
       { name: "🌊 深海遠古海溝", bg: "radial-gradient(circle at center, #064e3b 0%, #022c22 100%)", themeColor: "#10b981" },
-      { name: "城堡 🏰 暗黑魔王城堡", bg: "radial-gradient(circle at center, #4c0519 0%, #0f172a 100%)", themeColor: "#f43f5e" }
+      { name: "🏰 暗黑魔王城堡", bg: "radial-gradient(circle at center, #4c0519 0%, #0f172a 100%)", themeColor: "#f43f5e" }
     ];
 
     const normalIcons = ["👾", "👻", "🦇", "🕷️", "🐙", "🧟", "🎃", "🦟", "🦂", "🐍"];
@@ -470,7 +464,7 @@
     const rawWordList = [
       "晴天", "雨天", "陰天", "大霧", "下雨", "打雷", "晴朗", "冰雹", "太陽", "下雪", "月亮", "星星", "彩虹", "閃電", "颱風", 
       "涼快的", "寒冷的", "雲霧", "霧霾", "刮風", "潮濕的", "炎熱的", "傾盆大雨", "烏雲密佈", "陽光明媚", "今天", "昨天", 
-      "新聞", "時候", "前天", "後天", "星期", "分", "秒", "小息", "每天", "天天", "黃昏", "早上", "中午", "下午", "晚上", 
+      "明天", "時候", "前天", "後天", "星期", "分", "秒", "小息", "每天", "天天", "黃昏", "早上", "中午", "下午", "晚上", 
       "上午", "以前", "從前", "以後", "現在", "去年", "今年", "前年", "週末", "上課", "下課", "很久", "季節", "小時", "一大早", 
       "春夏秋冬", "日月", "年月", "有", "有一天", "有一次", "有時候", "星期天", "過了一會兒", "很久以前", "上週", "下個月", 
       "新年", "春節", "假期", "暑假", "假日", "國慶", "放假的時候", "聖誕節", "復活節", "清明節", "萬聖節", "中秋節", 
@@ -597,7 +591,7 @@
       return arr;
     }
 
-    // 👑 判定是否為 30 詞 Boss 關卡 (每 30 詞一隻 Boss)
+    // 👑 判定是否為 30 詞 Boss 關卡
     function getMonsterInfo(index) {
       const level = index + 1;
       const isBoss = level % 30 === 0;
@@ -852,7 +846,6 @@
       } catch(e) {}
     }
 
-    // 💡 提取標準帶聲調拼音（多音字優先校正）
     function getStandardPinyin(word) {
       if (customPinyinDict[word]) return customPinyinDict[word];
       if (window.pinyinPro) {
@@ -863,103 +856,78 @@
       return '';
     }
 
-    // 💡 提取模糊比對拼音（多音字優先校正）
-    function getFuzzyPinyin(str) {
-      if (customFuzzyPinyinDict[str]) return customFuzzyPinyinDict[str];
-      if (!window.pinyinPro || !str) return '';
-      try {
-        const py = pinyinPro.pinyin(str, { toneType: 'none', type: 'array' }).join('');
-        return py.toLowerCase()
-          .replace(/ing/g, 'in')
-          .replace(/eng/g, 'en')
-          .replace(/ang/g, 'an')
-          .replace(/ian/g, 'ian')
-          .replace(/zh/g, 'z')
-          .replace(/ch/g, 'c')
-          .replace(/sh/g, 's')
-          .replace(/l/g, 'l')
-          .replace(/n/g, 'l')
-          .replace(/[^a-z]/g, '');
-      } catch(e) {
-        return '';
+    // 💡 獲取單個詞語的「標準音節陣列」（包含多音字校正）
+    function getPinyinSyllableArray(word) {
+      const cleanWord = word.replace(/[^\u4e00-\u9fa5a-zA-Z]/g, '');
+      if (customPinyinArrayDict[cleanWord]) {
+        return customPinyinArrayDict[cleanWord];
       }
+      if (window.pinyinPro && pinyinPro.pinyin) {
+        try {
+          return pinyinPro.pinyin(cleanWord || word, { toneType: 'none', type: 'array' });
+        } catch(e) {}
+      }
+      return [];
     }
 
-    function levenshteinDistance(a, b) {
-      if (!a || !b) return (a || b).length;
-      const matrix = [];
-      for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-      for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+    // 💡 音節容錯歸一化（聲母/韻母口音歸一）
+    function normalizeSyllable(s) {
+      if (!s) return '';
+      let py = s.toLowerCase().replace(/[^a-z]/g, '');
+      if (py === 'lu') py = 'lv';
+      if (py === 'nu') py = 'nv';
 
-      for (let i = 1; i <= b.length; i++) {
-        for (let j = 1; j <= a.length; j++) {
-          if (b.charAt(i - 1) === a.charAt(j - 1)) {
-            matrix[i][j] = matrix[i - 1][j - 1];
-          } else {
-            matrix[i][j] = Math.min(
-              matrix[i - 1][j - 1] + 1,
-              matrix[i][j - 1] + 1,
-              matrix[i - 1][j] + 1
-            );
-          }
-        }
-      }
-      return matrix[b.length][a.length];
+      // 廣東口音/前後鼻音/N L 不分歸一化
+      if (py.startsWith('n')) py = 'l' + py.slice(1);
+      if (py.startsWith('zh')) py = 'z' + py.slice(2);
+      else if (py.startsWith('ch')) py = 'c' + py.slice(2);
+      else if (py.startsWith('sh')) py = 's' + py.slice(2);
+
+      if (py.endsWith('ing')) py = py.slice(0, -3) + 'in';
+      else if (py.endsWith('eng')) py = py.slice(0, -3) + 'en';
+      else if (py.endsWith('ang')) py = py.slice(0, -3) + 'an';
+
+      return py;
     }
 
-    // 💡 拼音優先雙向匹配（全自動消除繁簡字體差異 & 多音字校正）
+    // 💡 精準「逐字音節 (Syllable-by-Syllable) 比對引擎」
     function checkMatch(heard, target) {
       if (!heard || !target) return false;
-      
+
       const cleanHeard = heard.replace(/[^\u4e00-\u9fa5a-zA-Z]/g, '');
       const cleanTarget = target.replace(/[^\u4e00-\u9fa5a-zA-Z]/g, '');
 
-      // 1. 標準拼音完全一致比對
-      let pyHeardArray = [];
-      let pyTargetArray = [];
+      // 1. 提取 Target 與 Heard 的音節陣列
+      const targetSyllables = getPinyinSyllableArray(cleanTarget);
+      const heardSyllables = getPinyinSyllableArray(cleanHeard);
 
-      if (customFuzzyPinyinDict[cleanTarget]) {
-        pyTargetArray = [customFuzzyPinyinDict[cleanTarget]];
-      } else {
-        try { pyTargetArray = pinyinPro.pinyin(cleanTarget || target, { toneType: 'none', type: 'array' }); } catch(e){}
-      }
+      if (!targetSyllables.length || !heardSyllables.length) return false;
 
-      if (customFuzzyPinyinDict[cleanHeard]) {
-        pyHeardArray = [customFuzzyPinyinDict[cleanHeard]];
-      } else {
-        try { pyHeardArray = pinyinPro.pinyin(cleanHeard || heard, { toneType: 'none', type: 'array' }); } catch(e){}
-      }
+      // 2. 對每個音節進行口音歸一化
+      const normTarget = targetSyllables.map(normalizeSyllable);
+      const normHeard = heardSyllables.map(normalizeSyllable);
 
-      const pyHeardStr = pyHeardArray.join('');
-      const pyTargetStr = pyTargetArray.join('');
+      const tLen = normTarget.length;
+      const hLen = normHeard.length;
 
-      if (pyHeardStr && pyTargetStr) {
-        if (pyHeardStr === pyTargetStr || pyHeardStr.includes(pyTargetStr) || pyTargetStr.includes(pyHeardStr)) {
-          return true;
+      // 如果聽到的總音節數少於目標詞語音節數，直接判定無效
+      if (hLen < tLen) return false;
+
+      // 3. 滑動視窗 (Sliding Window) 逐字比對：必須「每個字的音節都符合」才算通過！
+      for (let i = 0; i <= hLen - tLen; i++) {
+        let isMatch = true;
+        for (let j = 0; j < tLen; j++) {
+          if (normHeard[i + j] !== normTarget[j]) {
+            isMatch = false;
+            break;
+          }
+        }
+        if (isMatch) {
+          return true; // 每個字的音節完全對應，精準通過！
         }
       }
 
-      // 2. 模糊拼音 Levenshtein 相似度門檻 (>= 60%)
-      const fuzzyHeard = getFuzzyPinyin(cleanHeard || heard);
-      const fuzzyTarget = getFuzzyPinyin(cleanTarget || target);
-
-      if (fuzzyHeard && fuzzyTarget) {
-        if (fuzzyHeard === fuzzyTarget || fuzzyHeard.includes(fuzzyTarget) || fuzzyTarget.includes(fuzzyHeard)) {
-          return true;
-        }
-
-        const dist = levenshteinDistance(fuzzyHeard, fuzzyTarget);
-        const maxLen = Math.max(fuzzyHeard.length, fuzzyTarget.length);
-        const similarity = (maxLen - dist) / maxLen;
-        
-        console.log(`拼音比對：[${fuzzyHeard}] vs [${fuzzyTarget}]，相似度: ${(similarity * 100).toFixed(1)}%`);
-
-        if (similarity >= 0.60) {
-          return true;
-        }
-      }
-
-      return false;
+      return false; // 只要有任何一個字音節不符 (如「難過」vs「難得」、「綠色」vs「黃色」)，判定失敗！
     }
 
     function handleSuccess() {
